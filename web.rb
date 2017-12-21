@@ -12,7 +12,7 @@ use Rack::Session::EncryptedCookie,
 
 get '/' do
   status 200
-  return "Great, your backend is set up. Now you can configure the Stripe example apps to point here."
+  return "Hello, Hui or whomever you are."
 end
 
 post '/ephemeral_keys' do
@@ -38,14 +38,19 @@ post '/charge' do
 
   # Create the charge on Stripe's servers - this will charge the user's card
   begin
-    charge = Stripe::Charge.create(
-      :amount => params[:amount], # this number should be in cents
-      :currency => "usd",
-      :customer => @customer.id,
-      :source => source,
-      :description => "Example Charge",
-      :shipping => params[:shipping],
-    )
+     # Create a Customer:
+customer = Stripe::Customer.create(
+  :email => "paying.user@example.com",
+  :source => token,
+)
+    # Charge the Customer instead of the card:
+charge = Stripe::Charge.create(
+  :amount => params[:amount],
+  :currency => "usd",
+  :customer => customer.id,
+  :description => "Hui",
+)
+  
   rescue Stripe::StripeError => e
     status 402
     return "Error creating charge: #{e.message}"
