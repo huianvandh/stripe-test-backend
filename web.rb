@@ -16,6 +16,7 @@ get '/' do
 end
 
 post '/ephemeral_keys' do
+  return
   authenticate!
   begin
     key = Stripe::EphemeralKey.create(
